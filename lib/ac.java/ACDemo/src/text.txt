@@ -1,0 +1,32 @@
+该类与它的父类InputStreamReader的主要不同在于构造函数，主要区别也就在于构造函数！
+从InputStreamReader的构造函数中看到，参数为InputStream和编码方式，可以看出，
+当要指定编码方式时，必须使用InputStreamReader
+类；而FileReader构造函数的参数与FileInputStream同，为File对象或表示path的String，可以看出，当要根据File对象或者String读取一个文件时，用FileReader；
+我想FileReader子类的作用也就在于这个小分工吧。该类与它的父类InputStreamReader
+的主要不同在于构造函数，主要区别也就在于构造函数！
+从InputStreamReader
+的构造函数中看到，参数为InputStream和编码方式，可以看出，
+当要指定编码方式时，必须使用InputStreamReader
+类；而FileReader构造函数的参数与FileInputStream
+同，为File对象或表示path的String，可以看出，当要根据File对象或者String读取一个文件时，用FileReader；
+我想FileReader子类的作用也就在于这个小分工吧。
+二 联系与区别
+（1）字符与字节：
+FileInputStream 类以二进制输入/输出，I/O速度快且效率搞，但是它的read（）方法读到的是一个字节（二进制数据），很不利于人们阅读，而且无法直接对文件中的字符进行操作，比如替换，查找（必须以字节形式操作）；
+而Reader类弥补了这个缺陷，可以以文本格式输入/输出，非常方便；比如可以使用while((ch = filereader.read())!=-1 )循环来读取文件；可以使用BufferedReader的readLine()方法一行一行的读取文本。
+印尼伊斯兰祈祷团
+东突厥斯坦伊斯兰运动拉登
+拉丹自由运动
+非典IP17908小灵通
+CDMA绿色环保手机黄色
+回民中国移动通信
+合约胡锦涛温家宝玄机游行
+上访罢课罢工
+集会锦涛语音拨打广告7.3109.635九、评九.评九评九-评猛料包赢预约卡灵动卡
+中奖反日抗日小泉靖国神社日货日他钓鱼岛涉潜在用户特等奖香港总部玄`机黑庄现身
+主席银行联合管理局刷卡消费中国银联操你娘SIM卡抽奖傻B日你妈鸡巴操你小鸡鸡
+dafa强奸fuck妓女干你娘天葬三码六码九码枪支迷药王八蛋婊子蠢猪畜生弹药
+窃听器暴乱我X X你我XX你代开发票通信维权
+txwq.net新唐人
+华人媒体肉棒J巴
+做爱作爱淫
