@@ -1,6 +1,7 @@
 package cn.gucas.ia.matrix;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -8,11 +9,11 @@ import java.util.Queue;
 import java.util.Stack;
 
 /**
- * @Description: 
- * 	the answer to http://weibo.com/1915548291/z4eTPtAnv 
+ * @Description: the answer to http://weibo.com/1915548291/z4eTPtAnv 
  * 		1. create 8 nodes; 
  * 		2. use adjacent list to represent the graph's edges 
- * 		3. breadth first search
+ * 		3. search: breadth first search(bfs) / two way breadth first search(bibfs)
+ *		4. performance compare
  * @author pengf
  * @date 2012-11-8
  */
@@ -21,33 +22,17 @@ public class MatrixPuzzle {
 	/* 1. create nodes */
 	// 1.1 define operation
 	private enum Operation {
-		PLUS("+", 7), MINIUS("-", 5), TIMES("*", 3), DIVIDE("/", 2);
+		PLUS("+"), MINUS("-"), TIMES("*"), DIVIDE("/");
 
-		private final int value;
-		private final String op;
+		private final String symbol;
 
-		Operation(String op, int value) {
-			this.op = op;
-			this.value = value;
-		}
-
-		double apply(double x) {
-			switch (this) {
-			case PLUS:
-				return x + value;
-			case MINIUS:
-				return x - value;
-			case TIMES:
-				return x * value;
-			case DIVIDE:
-				return x / value;
-			}
-			throw new AssertionError("Unknown operation: " + this);
+		Operation(String symbol) {
+			this.symbol = symbol;
 		}
 
 		@Override
 		public String toString() {
-			return op + " " + value;
+			return symbol;
 		}
 	}
 
@@ -70,11 +55,13 @@ public class MatrixPuzzle {
 	// 1.3 declare node's structure
 	private class Node {
 		Operation operation;
+		int value;
 		Direction direction;
 		List<Node> adjacentNodes;
 
-		Node(Operation operation, Direction direction) {
+		Node(Operation operation, int value, Direction direction) {
 			this.operation = operation;
+			this.value = value;
 			this.direction = direction;
 			this.adjacentNodes = new ArrayList<Node>();
 		}
@@ -82,17 +69,54 @@ public class MatrixPuzzle {
 		void addAdjacentNode(Node s) {
 			adjacentNodes.add(s);
 		}
+
+		double apply(double in) {
+			switch (operation) {
+			case PLUS:
+				return in + value;
+			case MINUS:
+				return in - value;
+			case TIMES:
+				return in * value;
+			case DIVIDE:
+				return in / value;
+			}
+			throw new AssertionError("Unknown op: " + operation);
+		}
+
+		double reverseApply(double in) {
+			switch (operation) {
+			case PLUS:
+				return in - value;
+			case MINUS:
+				return in + value;
+			case TIMES:
+				return in / value;
+			case DIVIDE:
+				return in * value;
+			}
+			throw new AssertionError("Unknown op: " + operation);
+		}
+
+		@Override
+		public int hashCode() {
+			int result = 17;
+			result = 31 * result + operation.ordinal();
+			result = 31 * result + value;
+			result = 31 * result + direction.ordinal();
+			return result;
+		}
 	}
 
 	// 1.4 define node in graph
-	Node plus7Left = new Node(Operation.PLUS, Direction.LEFT);
-	Node plus7Right = new Node(Operation.PLUS, Direction.RIGHT);
-	Node minus5Left = new Node(Operation.MINIUS, Direction.LEFT);
-	Node minus5Right = new Node(Operation.MINIUS, Direction.RIGHT);
-	Node times3Left = new Node(Operation.TIMES, Direction.LEFT);
-	Node times3Right = new Node(Operation.TIMES, Direction.RIGHT);
-	Node divide2Left = new Node(Operation.DIVIDE, Direction.LEFT);
-	Node divide2Right = new Node(Operation.DIVIDE, Direction.RIGHT);
+	Node plus7Left = new Node(Operation.PLUS, 7, Direction.LEFT);
+	Node plus7Right = new Node(Operation.PLUS, 7, Direction.RIGHT);
+	Node minus5Left = new Node(Operation.MINUS, 5, Direction.LEFT);
+	Node minus5Right = new Node(Operation.MINUS, 5, Direction.RIGHT);
+	Node times3Left = new Node(Operation.TIMES, 3, Direction.LEFT);
+	Node times3Right = new Node(Operation.TIMES, 3, Direction.RIGHT);
+	Node divide2Left = new Node(Operation.DIVIDE, 2, Direction.LEFT);
+	Node divide2Right = new Node(Operation.DIVIDE, 2, Direction.RIGHT);
 
 	/* 2. define edges in graph */
 	void initGraph() {
@@ -132,35 +156,35 @@ public class MatrixPuzzle {
 	/* 3 search process */
 	// 3.1 declare state's structure, used to record the visited statement
 	private class State {
-		double input;
+		double in;
 		Node node;
 		State prev;
 
-		State(double input, Node node, State prev) {
-			this.input = input;
+		State(double in, Node node, State prev) {
+			this.in = in;
 			this.node = node;
 			this.prev = prev;
 		}
 
 		@Override
 		public boolean equals(Object o) {
-			return (this.input == ((State) o).input)
+			return (this.in == ((State) o).in)
 					&& (this.node.equals(((State) o).node));
 		}
 
 		@Override
 		public int hashCode() {
 			int result = 17;
-			long f = Double.doubleToLongBits(input);
+			long f = Double.doubleToLongBits(in);
 			f = f ^ (f >> 32);
 			result = 31 * result + (int) f;
-			result = 31 * result + node.operation.value;
+			result = 31 * result + node.hashCode();
 			return result;
 		}
 	}
 
 	// 3.2 breadth first search
-	private void bfs() {
+	private void bfs(boolean showPath) {
 		// init
 		State startState = new State(2011, plus7Right, null);
 		HashSet<State> visitedStates = new HashSet<State>();
@@ -171,10 +195,12 @@ public class MatrixPuzzle {
 		// run
 		while (!queue.isEmpty()) {
 			State v = queue.poll();
-			double result = v.node.operation.apply(v.input);
+			double result = v.node.apply(v.in);
 			if (result == 2012 && (v.node.equals(minus5Right))) {
 				// show the path
-				showPath(v);
+				if (showPath) {
+					showPath(v, true);
+				}
 				return;
 			}
 			// cut branches
@@ -191,23 +217,118 @@ public class MatrixPuzzle {
 		}
 	}
 
-	// 3.3 show path
-	private void showPath(State s) {
-		Stack<State> path = new Stack<State>();
-		while (s != null) {
-			path.add(s);
-			s = s.prev;
+	// 3.3 two way breadth first search
+	private void bibfs(boolean showPath) {
+		// forward init
+		State startState = new State(2011, plus7Right, null);
+		HashMap<Integer, State> forwardVisitedStates = new HashMap<Integer, State>();
+		Queue<State> forwardQueue = new LinkedList<State>();
+		forwardQueue.add(startState);
+		forwardVisitedStates.put(startState.hashCode(), startState);
+		// backward init
+		State endState = new State(2012, minus5Left, null);
+		HashMap<Integer, State> backwardVisitedStates = new HashMap<Integer, State>();
+		Queue<State> backwardQueue = new LinkedList<State>();
+		backwardQueue.add(endState);
+		backwardVisitedStates.put(endState.hashCode(), endState);
+
+		// run
+		while (!(forwardQueue.isEmpty() && backwardQueue.isEmpty())) {
+			if (forwardQueue.size() <= backwardQueue.size()) {
+				State v = forwardQueue.poll();
+				double result = v.node.apply(v.in);
+				int bvKey = new State(result, v.node, null).hashCode();
+				if (backwardVisitedStates.containsKey(bvKey)) {
+					// show path
+					if (showPath) {
+						showPath(v, true);
+						State bv = backwardVisitedStates.get(bvKey);
+						showPath(bv, false);
+					}
+					return;
+				}
+				// cut branches
+				if (result - (int) result > 0.0) {
+					continue;
+				}
+				for (Node w : v.node.adjacentNodes) {
+					State s = new State(result, w, v);
+					int sKey = s.hashCode();
+					if (!forwardVisitedStates.containsKey(sKey)) {
+						forwardVisitedStates.put(sKey, s);
+						forwardQueue.add(s);
+					}
+				}
+			} else {
+				State v = backwardQueue.poll();
+				double result = v.node.reverseApply(v.in);
+				int fvKey = new State(result, v.node, null).hashCode();
+				if (forwardVisitedStates.containsKey(fvKey)) {
+					// show path
+					if (showPath) {
+						State fv = forwardVisitedStates.get(fvKey);
+						showPath(fv, true);
+						showPath(v, false);
+					}
+					return;
+				}
+				// cut branches
+				if (result - (int) result > 0.0) {
+					continue;
+				}
+				for (Node w : v.node.adjacentNodes) {
+					State s = new State(result, w, v);
+					int sKey = s.hashCode();
+					if (!backwardVisitedStates.containsKey(sKey)) {
+						backwardVisitedStates.put(sKey, s);
+						backwardQueue.add(s);
+					}
+				}
+			}
 		}
-		while (!path.isEmpty()) {
-			s = path.pop();
-			System.out.println(s.input + " " + s.node.operation + "("
-					+ s.node.direction + ")" + " =");
+	}
+
+	// 3.4 show path
+	private void showPath(State s, boolean reverse) {
+		if (reverse) {
+			Stack<State> path = new Stack<State>();
+			while (s != null) {
+				path.add(s);
+				s = s.prev;
+			}
+			while (!path.isEmpty()) {
+				s = path.pop();
+				System.out.println(s.in + " " + s.node.operation + s.node.value
+						+ "(" + s.node.direction + ")" + " =");
+			}
+		} else {
+			while (s != null) {
+				System.out.println(s.node.operation + "" + s.node.value + "("
+						+ s.node.direction + ")" + " = " + s.in);
+				s = s.prev;
+			}
 		}
 	}
 
 	public static void main(String[] args) {
 		MatrixPuzzle puzzle = new MatrixPuzzle();
+		// init graph
 		puzzle.initGraph();
-		puzzle.bfs();
+
+		// bfs
+		long startMilli = System.currentTimeMillis();
+		puzzle.bfs(false);
+		long cost = System.currentTimeMillis() - startMilli;
+		System.out.println("bfs cost: " + cost);
+
+		// bibfs
+		startMilli = System.currentTimeMillis();
+		puzzle.bibfs(false);
+		cost = System.currentTimeMillis() - startMilli;
+		System.out.println("bibfs cost: " + cost);
+
+		// show path
+		// puzzle.bfs(true);
+		puzzle.bibfs(true);
 	}
 }
