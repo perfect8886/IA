@@ -198,8 +198,8 @@ public class MatrixPuzzle {
 		// run
 		while (!queue.isEmpty()) {
 			State v = queue.poll();
-			double result = v.node.apply(v.in);
-			if (result == 2012 && (v.node.equals(minus5Right))) {
+			double out = v.node.apply(v.in);
+			if (out == 2012 && (v.node.equals(minus5Right))) {
 				// show the path
 				if (showPath) {
 					showPath(v, true);
@@ -207,11 +207,11 @@ public class MatrixPuzzle {
 				return;
 			}
 			// cut branches
-			if (result - (int) result > 0.0) {
+			if (out - (int) out > 0.0) {
 				continue;
 			}
 			for (Node w : v.node.adjacentNodes) {
-				State s = new State(result, w, v);
+				State s = new State(out, w, v);
 				if (!visitedStates.contains(s)) {
 					visitedStates.add(s);
 					queue.add(s);
@@ -239,8 +239,8 @@ public class MatrixPuzzle {
 		while (!(forwardQueue.isEmpty() && backwardQueue.isEmpty())) {
 			if (forwardQueue.size() <= backwardQueue.size()) {
 				State v = forwardQueue.poll();
-				double result = v.node.apply(v.in);
-				int bvKey = new State(result, v.node, null).hashCode();
+				double out = v.node.apply(v.in);
+				int bvKey = new State(out, v.node, null).hashCode();
 				if (backwardVisitedStates.containsKey(bvKey)) {
 					// show path
 					if (showPath) {
@@ -251,11 +251,11 @@ public class MatrixPuzzle {
 					return;
 				}
 				// cut branches
-				if (result - (int) result > 0.0) {
+				if (out - (int) out > 0.0) {
 					continue;
 				}
 				for (Node w : v.node.adjacentNodes) {
-					State s = new State(result, w, v);
+					State s = new State(out, w, v);
 					int sKey = s.hashCode();
 					if (!forwardVisitedStates.containsKey(sKey)) {
 						forwardVisitedStates.put(sKey, s);
@@ -264,8 +264,8 @@ public class MatrixPuzzle {
 				}
 			} else {
 				State v = backwardQueue.poll();
-				double result = v.node.reverseApply(v.in);
-				int fvKey = new State(result, v.node, null).hashCode();
+				double out = v.node.reverseApply(v.in);
+				int fvKey = new State(out, v.node, null).hashCode();
 				if (forwardVisitedStates.containsKey(fvKey)) {
 					// show path
 					if (showPath) {
@@ -276,11 +276,11 @@ public class MatrixPuzzle {
 					return;
 				}
 				// cut branches
-				if (result - (int) result > 0.0) {
+				if (out - (int) out > 0.0) {
 					continue;
 				}
 				for (Node w : v.node.adjacentNodes) {
-					State s = new State(result, w, v);
+					State s = new State(out, w, v);
 					int sKey = s.hashCode();
 					if (!backwardVisitedStates.containsKey(sKey)) {
 						backwardVisitedStates.put(sKey, s);
