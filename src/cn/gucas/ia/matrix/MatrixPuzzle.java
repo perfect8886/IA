@@ -13,6 +13,9 @@ import java.util.Stack;
  * 		1. create 8 nodes; 
  * 		2. use adjacent list to represent the graph's edges 
  * 		3. search: breadth first search(bfs) / two way breadth first search(bibfs)
+ *			cutting strategy:
+ *				a. cut repeat state
+ *				b. cut the state with decimal output	
  *		4. performance compare
  * @author pengf
  * @date 2012-11-8
@@ -118,7 +121,7 @@ public class MatrixPuzzle {
 	Node divide2Left = new Node(Operation.DIVIDE, 2, Direction.LEFT);
 	Node divide2Right = new Node(Operation.DIVIDE, 2, Direction.RIGHT);
 
-	/* 2. define edges in graph */
+	/* 2 define edges in graph */
 	void initGraph() {
 		// plus left
 		plus7Left.addAdjacentNode(divide2Right);
@@ -315,7 +318,8 @@ public class MatrixPuzzle {
 		// init graph
 		puzzle.initGraph();
 
-		// bfs
+		/* 4 performance compare */
+		// bfs 
 		long startMilli = System.currentTimeMillis();
 		puzzle.bfs(false);
 		long cost = System.currentTimeMillis() - startMilli;
