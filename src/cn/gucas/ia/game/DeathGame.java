@@ -96,7 +96,7 @@ public class DeathGame {
 		Scanner in = new Scanner(System.in);
 
 		while (true) {
-			System.out.println("是否显示每轮状态？（Y/N）:");
+			System.out.println("whether show the states of each player?(Y/N):");
 			String showSate = in.nextLine();
 			while (true) {
 				if (showSate.equalsIgnoreCase("Y")) {
@@ -106,19 +106,19 @@ public class DeathGame {
 					deathGame.setShowState(false);
 					break;
 				} else {
-					System.out.println("是否显示每轮状态？（Y/N）");
+					System.out.println("whether show the states of each player?(Y/N):");
 					showSate = in.nextLine();
 				}
 			}
 
-			System.out.println("请输入游戏人数N（16<N<32）:");
+			System.out.println("please input the number of players(16<N<32):");
 			String nStr = in.nextLine();
 			int N = 0;
 			while (true) {
 				try {
 					N = Integer.parseInt(nStr);
 				} catch (Exception e) {
-					System.out.println("请输入游戏人数N（16<N<32）:");
+					System.out.println("please input the number of players(16<N<32):");
 					nStr = in.nextLine();
 					continue;
 				}
@@ -126,19 +126,19 @@ public class DeathGame {
 					deathGame.setN(N);
 					break;
 				} else {
-					System.out.println("请输入游戏人数N（16<N<32）:");
+					System.out.println("please input the number of players(16<N<32):");
 					nStr = in.nextLine();
 				}
 			}
 
-			System.out.println("请输入死亡数字M（2<M<10）:");
+			System.out.println("please input the death number(2<M<10):");
 			String mStr = in.nextLine();
 			int M = 0;
 			while (true) {
 				try {
 					M = Integer.parseInt(mStr);
 				} catch (Exception e) {
-					System.out.println("请输入死亡数字M（2<M<10）:");
+					System.out.println("please input the death number(2<M<10):");
 					mStr = in.nextLine();
 					continue;
 				}
@@ -146,14 +146,14 @@ public class DeathGame {
 					deathGame.setM(M);
 					break;
 				} else {
-					System.out.println("请输入死亡数字M（2<M<10）:");
+					System.out.println("please input the death number(2<M<10):");
 					mStr = in.nextLine();
 				}
 			}
 
 			deathGame.process();
 
-			System.out.println("再玩一次？（Y/N）:");
+			System.out.println("play again?(Y/N):");
 			String again = in.nextLine();
 			while (true) {
 				if (again.equalsIgnoreCase("Y")) {
@@ -161,7 +161,7 @@ public class DeathGame {
 				} else if (again.equalsIgnoreCase("N")) {
 					return;
 				} else {
-					System.out.println("再玩一次？（Y/N）:");
+					System.out.println("play again?(Y/N):");
 					again = in.nextLine();
 				}
 			}
