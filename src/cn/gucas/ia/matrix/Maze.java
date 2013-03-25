@@ -21,7 +21,7 @@ import java.util.Stack;
  * @date 2012-11-8
  */
 
-public class MatrixPuzzle {
+public class Maze {
 	/* 1. create nodes */
 	// 1.1 define operation
 	private enum Operation {
@@ -314,7 +314,7 @@ public class MatrixPuzzle {
 	}
 
 	public static void main(String[] args) {
-		MatrixPuzzle puzzle = new MatrixPuzzle();
+		Maze puzzle = new Maze();
 		// init graph
 		puzzle.initGraph();
 

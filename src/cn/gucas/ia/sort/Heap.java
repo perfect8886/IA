@@ -1,6 +1,8 @@
 package cn.gucas.ia.sort;
 
-public class Heap<T> {
+import java.util.Comparator;
+
+public class Heap<T extends Comparator<T>> {
 	HeapNode<T>[] heap;
 	int heapSize;
 
